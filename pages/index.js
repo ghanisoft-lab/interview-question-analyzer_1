@@ -32,6 +32,10 @@ export default function Home() {
         }),
       })
       
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`)
+      }
+      
       const data = await response.json()
       setAnalysis(data)
       setActiveTab('insights')
@@ -71,33 +75,33 @@ export default function Home() {
         
         {analysis && (
           <div className="mt-8">
-            <div className="flex border-b">
+            <div className="flex border-b overflow-x-auto">
               <button
-                className={`py-2 px-4 font-medium ${activeTab === 'insights' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'insights' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                 onClick={() => setActiveTab('insights')}
               >
                 Role Insights
               </button>
               <button
-                className={`py-2 px-4 font-medium ${activeTab === 'questions' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'questions' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                 onClick={() => setActiveTab('questions')}
               >
                 Interview Questions
               </button>
               <button
-                className={`py-2 px-4 font-medium ${activeTab === 'gaps' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'gaps' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                 onClick={() => setActiveTab('gaps')}
               >
                 Skill Gaps
               </button>
               <button
-                className={`py-2 px-4 font-medium ${activeTab === 'practice' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'practice' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                 onClick={() => setActiveTab('practice')}
               >
                 Practice Mode
               </button>
               <button
-                className={`py-2 px-4 font-medium ${activeTab === 'export' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'export' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
                 onClick={() => setActiveTab('export')}
               >
                 Export

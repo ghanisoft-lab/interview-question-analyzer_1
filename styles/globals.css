@@ -12,9 +12,11 @@ body {
 
 .container {
   max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
-/* Custom styles for print */
+/* Print styles */
 @media print {
   .no-print {
     display: none !important;
@@ -25,17 +27,5 @@ body {
     line-height: 1.5;
     color: #000;
     background: #fff;
-  }
-  
-  .break-before {
-    page-break-before: always;
-  }
-  
-  .break-after {
-    page-break-after: always;
-  }
-  
-  .break-inside-avoid {
-    page-break-inside: avoid;
   }
 }
