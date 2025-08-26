@@ -31,20 +31,21 @@ export default function Home() {
           resumeText
         }),
       })
-      
-      if (!response.ok) {
-        throw new Error(`API error: ${response.status}`)
-      }
-      
+
       const data = await response.json()
+
+      if (!response.ok) {
+        throw new Error(data.error || `API error: ${response.status}`)
+      }
+
       setAnalysis(data)
       setActiveTab('insights')
-      
+
       // Generate a session ID for sharing
       setSessionId(Date.now().toString(36) + Math.random().toString(36).substr(2))
     } catch (error) {
       console.error('Error analyzing job description:', error)
-      alert('Failed to analyze job description. Please try again.')
+      alert(error.message || 'Failed to analyze job description. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -54,16 +55,22 @@ export default function Home() {
     <div className="min-h-screen bg-gray-50">
       <Head>
         <title>Interview Question Analyzer from Job Descriptions</title>
-        <meta name="description" content="Analyze job descriptions and generate tailored interview questions with AI-powered insights" />
-        <meta name="keywords" content="interview questions, job description analyzer, interview preparation, career development, job search" />
+        <meta
+          name="description"
+          content="Analyze job descriptions and generate tailored interview questions with AI-powered insights"
+        />
+        <meta
+          name="keywords"
+          content="interview questions, job description analyzer, interview preparation, career development, job search"
+        />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <Header />
-      
+
       <main className="container mx-auto px-4 py-8">
         {activeTab === 'input' && (
-          <JDInput 
+          <JDInput
             jobDescription={jobDescription}
             setJobDescription={setJobDescription}
             resumeText={resumeText}
@@ -72,42 +79,62 @@ export default function Home() {
             loading={loading}
           />
         )}
-        
+
         {analysis && (
           <div className="mt-8">
             <div className="flex border-b overflow-x-auto">
               <button
-                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'insights' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${
+                  activeTab === 'insights'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
                 onClick={() => setActiveTab('insights')}
               >
                 Role Insights
               </button>
               <button
-                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'questions' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${
+                  activeTab === 'questions'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
                 onClick={() => setActiveTab('questions')}
               >
                 Interview Questions
               </button>
               <button
-                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'gaps' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${
+                  activeTab === 'gaps'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
                 onClick={() => setActiveTab('gaps')}
               >
                 Skill Gaps
               </button>
               <button
-                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'practice' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${
+                  activeTab === 'practice'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
                 onClick={() => setActiveTab('practice')}
               >
                 Practice Mode
               </button>
               <button
-                className={`py-2 px-4 font-medium whitespace-nowrap ${activeTab === 'export' ? 'border-b-2 border-blue-500 text-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`py-2 px-4 font-medium whitespace-nowrap ${
+                  activeTab === 'export'
+                    ? 'border-b-2 border-blue-500 text-blue-600'
+                    : 'text-gray-500 hover:text-gray-700'
+                }`}
                 onClick={() => setActiveTab('export')}
               >
                 Export
               </button>
             </div>
-            
+
             <div className="mt-6">
               {activeTab === 'insights' && <RoleInsights analysis={analysis} />}
               {activeTab === 'questions' && <InterviewQuestions analysis={analysis} />}

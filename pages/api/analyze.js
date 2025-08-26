@@ -1,29 +1,47 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY)
+// Initialize the Gemini AI with your API key
+const genAI = new GoogleGenerativeAI(process.env.NEXT_PUBLIC_GEMINI_API_KEY);
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' })
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
   try {
-    const { jobDescription, resumeText } = req.body
+    const { jobDescription, resumeText } = req.body;
 
     if (!jobDescription) {
-      return res.status(400).json({ error: 'Job description is required' })
+      return res.status(400).json({ error: 'Job description is required' });
     }
 
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    // Check if API key is available
+    if (!process.env.NEXT_PUBLIC_GEMINI_API_KEY) {
+      return res.status(500).json({ error: 'API key not configured' });
+    }
+
+    // Try different model names that might work
+    let model;
+    try {
+      model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+    } catch (e) {
+      // If gemini-pro doesn't work, try the full model name
+      try {
+        model = genAI.getGenerativeModel({ model: 'models/gemini-pro' });
+      } catch (err) {
+        console.error('Model error:', err);
+        return res.status(500).json({ error: 'Failed to initialize AI model' });
+      }
+    }
 
     // Create a prompt for analysis
     const prompt = `
     Analyze this job description and provide a structured analysis. If a resume is provided, include a skill gap analysis.
     
     Job Description:
-    ${jobDescription}
+    ${jobDescription.substring(0, 30000)}  // Limit length to avoid token limits
     
-    ${resumeText ? `Resume Text: ${resumeText}` : ''}
+    ${resumeText ? `Resume Text: ${resumeText.substring(0, 15000)}` : ''}
     
     Please provide a JSON response with the following structure:
     {
@@ -47,23 +65,31 @@ export default async function handler(req, res) {
     }
     
     Generate 3-5 questions for each category. For skill gap analysis, be constructive and provide learning recommendations.
-    `
+    `;
 
-    const result = await model.generateContent(prompt)
-    const response = await result.response
-    const text = response.text()
+    const result = await model.generateContent(prompt);
+    const response = await result.response;
+    const text = response.text();
 
     // Extract JSON from the response (Gemini might add some conversational text)
-    const jsonMatch = text.match(/\{[\s\S]*\}/)
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) {
-      throw new Error('Could not parse AI response')
+      console.error('Could not parse AI response:', text);
+      return res.status(500).json({ error: 'Could not parse AI response' });
     }
 
-    const analysis = JSON.parse(jsonMatch[0])
-
-    res.status(200).json(analysis)
+    try {
+      const analysis = JSON.parse(jsonMatch[0]);
+      res.status(200).json(analysis);
+    } catch (parseError) {
+      console.error('JSON parse error:', parseError, 'Text:', jsonMatch[0]);
+      res.status(500).json({ error: 'Failed to parse AI response as JSON' });
+    }
   } catch (error) {
-    console.error('Error analyzing job description:', error)
-    res.status(500).json({ error: 'Failed to analyze job description' })
+    console.error('Error analyzing job description:', error);
+    res.status(500).json({ 
+      error: 'Failed to analyze job description',
+      details: error.message 
+    });
   }
 }
