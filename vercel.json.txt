@@ -1,0 +1,19 @@
+
+## vercel.json
+
+```json
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/next"
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/results/:sessionId",
+      "destination": "/results/:sessionId"
+    }
+  ]
+}
