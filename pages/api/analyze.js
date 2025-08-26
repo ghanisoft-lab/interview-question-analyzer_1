@@ -20,19 +20,8 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'API key not configured' });
     }
 
-    // Try different model names that might work
-    let model;
-    try {
-      model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-    } catch (e) {
-      // If gemini-pro doesn't work, try the full model name
-      try {
-        model = genAI.getGenerativeModel({ model: 'models/gemini-pro' });
-      } catch (err) {
-        console.error('Model error:', err);
-        return res.status(500).json({ error: 'Failed to initialize AI model' });
-      }
-    }
+    // Use the correct model name: gemini-2.0-flash
+    const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
     // Create a prompt for analysis
     const prompt = `
